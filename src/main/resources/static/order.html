@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">🛋️ Furniture Store</a>
+    </div>
+</nav>
+<div class="container my-5">
+    <h2>Order Details</h2>
+    <div id="order-content">Loading...</div>
+</div>
+<script src="/js/api.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const id = new URLSearchParams(location.search).get('id')
+            || sessionStorage.getItem('orderId');
+        if (!id) { document.getElementById('order-content').textContent = 'No order specified'; return; }
+        try {
+            const res = await api.getOrder(id);
+            const o = res.data;
+            document.getElementById('order-content').innerHTML = `
+                    <div class="card">
+                        <div class="card-body">
+                            <h4>Order #${o.orderNumber}</h4>
+                            <p>Status: <span class="badge bg-info">${o.orderStatus}</span></p>
+                            <p>Payment: <span class="badge bg-${o.paymentStatus === 'SUCCESS' ? 'success' : 'secondary'}">${o.paymentStatus}</span></p>
+                            <p>Total: <strong>TZS ${Number(o.totalAmount).toLocaleString()}</strong></p>
+                            <p>Created: ${new Date(o.createdAt).toLocaleString()}</p>
+                            <hr>
+                            <h5>Items</h5>
+                            <ul class="list-group">
+                                ${o.items.map(i => `
+                                    <li class="list-group-item d-flex justify-content-between">
+                                        <span>${i.product.name} x ${i.quantity}</span>
+                                        <span>TZS ${Number(i.subtotal).toLocaleString()}</span>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+        } catch(e) {
+            document.getElementById('order-content').innerHTML =
+                '<div class="alert alert-danger">Failed to load order</div>';
+        }
+    });
+</script>
+</body>
+</html>

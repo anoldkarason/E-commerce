@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cart</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/">🛋️ Furniture Store</a>
+    <div class="navbar-nav ms-auto">
+      <a class="nav-link" href="/products.html">Products</a>
+      <a class="nav-link active" href="/cart.html">Cart <span id="cart-count" class="badge bg-warning">0</span></a>
+    </div>
+  </div>
+</nav>
+
+<div class="container my-5">
+  <h2>Shopping Cart</h2>
+  <div id="cart-content">Loading...</div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+  async function loadCart() {
+    try {
+      const res = await api.getCart();
+      const cart = res.data;
+      const el = document.getElementById('cart-content');
+
+      if (!cart.items || cart.items.length === 0) {
+        el.innerHTML = `
+                        <div class="alert alert-info">
+                            Your cart is empty. <a href="/products.html">Continue shopping</a>
+                        </div>`;
+        return;
+      }
+
+      el.innerHTML = `
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${cart.items.map(i => `
+                                <tr>
+                                    <td>
+                                        <img src="${i.productImage || ''}" style="width:60px;height:60px;object-fit:cover" class="me-2">
+                                        ${i.productName}
+                                    </td>
+                                    <td>TZS ${Number(i.unitPrice).toLocaleString()}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQty(${i.id}, ${i.quantity - 1})">-</button>
+                                        <span class="mx-2">${i.quantity}</span>
+                                        <button class="btn btn-sm btn-outline-secondary" onclick="updateQty(${i.id}, ${i.quantity + 1})">+</button>
+                                    </td>
+                                    <td>TZS ${Number(i.subtotal).toLocaleString()}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-danger" onclick="removeItem(${i.id})">Remove</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4>Total: TZS ${Number(cart.total).toLocaleString()}</h4>
+                        <div>
+                            <a href="/products.html" class="btn btn-outline-secondary">Continue Shopping</a>
+                            <a href="/checkout.html" class="btn btn-primary btn-lg">Checkout</a>
+                        </div>
+                    </div>
+                `;
+      updateCartCount();
+    } catch(e) { console.error(e); }
+  }
+
+  async function updateQty(itemId, qty) {
+    if (qty < 1) return;
+    try {
+      await api.updateCartItem(itemId, qty);
+      loadCart();
+    } catch(e) { alert(e.message); }
+  }
+
+  async function removeItem(itemId) {
+    if (!confirm('Remove this item?')) return;
+    try {
+      await api.removeCartItem(itemId);
+      loadCart();
+    } catch(e) { alert(e.message); }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadCart);
+</script>
+</body>
+</html>

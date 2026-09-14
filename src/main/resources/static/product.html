@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">🛋️ Furniture Store</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/products.html">Products</a>
+            <a class="nav-link" href="/cart.html">Cart <span id="cart-count" class="badge bg-warning">0</span></a>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-5" id="product-container">
+    <div class="text-center">Loading...</div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        updateCartCount();
+        const id = new URLSearchParams(location.search).get('id');
+        if (!id) { location.href = '/products.html'; return; }
+        try {
+            const res = await api.getProduct(id);
+            const p = res.data;
+            document.getElementById('product-container').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img src="${p.image || 'https://via.placeholder.com/500'}" class="img-fluid rounded">
+                        </div>
+                        <div class="col-md-6">
+                            <h1>${p.name}</h1>
+                            <p class="text-muted">${p.category || ''}</p>
+                            <h3 class="text-primary">TZS ${Number(p.price).toLocaleString()}</h3>
+                            <p>${p.description || ''}</p>
+                            <p>Available: <strong>${p.stock}</strong></p>
+                            <div class="d-flex align-items-center mb-3">
+                                <label class="me-3">Quantity:</label>
+                                <input type="number" id="qty" class="form-control" style="width:100px" value="1" min="1" max="${p.stock}">
+                            </div>
+                            <button class="btn btn-primary btn-lg" onclick="addToCart(${p.id})">
+                                Add to Cart
+                            </button>
+                            <a href="/products.html" class="btn btn-outline-secondary btn-lg">Continue Shopping</a>
+                        </div>
+                    </div>
+                `;
+        } catch(e) {
+            document.getElementById('product-container').innerHTML =
+                '<div class="alert alert-danger">Product not found</div>';
+        }
+    });
+
+    async function addToCart(productId) {
+        const qty = Number(document.getElementById('qty').value);
+        try {
+            await api.addToCart(productId, qty);
+            updateCartCount();
+            alert('Added to cart!');
+        } catch(e) {
+            alert(e.message || 'Failed to add');
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Payment · Furniture Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            /* Core palette — walnut, brass and forest, grounded in furniture/joinery */
+            --walnut-950: #1c140d;
+            --walnut-800: #3a2b1f;
+            --walnut-600: #6b5744;
+            --walnut-400: #a3907c;
+            --walnut-200: #ded2c1;
+            --paper: #f7f4ee;
+            --panel: #ffffff;
+            --brass: #a8722c;
+            --brass-light: #c99a52;
+            --forest: #24463a;
+            --success: #2f6b4f;
+            --success-bg: #eaf3ee;
+            --warning: #a5731f;
+            --warning-bg: #faf1df;
+            --danger: #a83a30;
+            --danger-bg: #fbece9;
+            --info: #2f5f7f;
+            --info-bg: #e9f1f5;
+            --border: #e4dccb;
+            --shadow-md: 0 8px 20px -8px rgba(28, 20, 13, 0.18);
+            --shadow-lg: 0 24px 48px -20px rgba(28, 20, 13, 0.32);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--paper);
+            min-height: 100vh;
+            color: var(--walnut-950);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar {
+            background: var(--paper);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--walnut-950);
+            text-decoration: none;
+            letter-spacing: -0.01em;
+        }
+
+        .navbar-brand::before {
+            content: '';
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            background: var(--walnut-950);
+            background-image: repeating-linear-gradient(
+                    115deg,
+                    rgba(200, 154, 82, 0.55) 0px,
+                    rgba(200, 154, 82, 0.55) 1.5px,
+                    transparent 1.5px,
+                    transparent 6px
+            );
+            display: inline-block;
+        }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .payment-wrapper {
+            padding: 3.5rem 0 4rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .payment-card {
+            width: 100%;
+            max-width: 480px;
+            background: var(--panel);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        /* ============================================================
+           CARD HEADER — flat walnut panel, brass rule, subtle grain
+           ============================================================ */
+        .payment-header {
+            background: var(--walnut-950);
+            background-image: repeating-linear-gradient(
+                    100deg,
+                    rgba(255, 255, 255, 0.025) 0px,
+                    rgba(255, 255, 255, 0.025) 1px,
+                    transparent 1px,
+                    transparent 9px
+            );
+            color: #fff;
+            padding: 1.85rem 2rem 1.6rem;
+            border-bottom: 3px solid var(--brass);
+        }
+
+        .payment-header .eyebrow {
+            font-size: 0.75rem;
+            color: var(--brass-light);
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .payment-header h3 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 1.4rem;
+        }
+
+        .order-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .summary-item {
+            background: rgba(0, 0, 0, 0.18);
+            padding: 0.75rem 1rem;
+        }
+
+        .summary-item .label {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0.25rem;
+        }
+
+        .summary-item .value {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            word-break: break-all;
+            color: #fff;
+        }
+
+        .summary-item.amount .value {
+            color: var(--brass-light);
+            font-size: 1.15rem;
+        }
+
+        /* ============================================================
+           CARD BODY
+           ============================================================ */
+        .payment-body {
+            padding: 2rem;
+        }
+
+        .form-section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--walnut-600);
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--walnut-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-control,
+        .form-select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--walnut-950);
+            background: var(--paper);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            transition: border-color 0.18s ease, box-shadow 0.18s ease;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .form-control::placeholder {
+            color: var(--walnut-400);
+            font-weight: 400;
+        }
+
+        .form-control:hover,
+        .form-select:hover {
+            border-color: var(--walnut-400);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: var(--panel);
+            border-color: var(--brass);
+            box-shadow: 0 0 0 4px rgba(168, 114, 44, 0.15);
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b5744' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px;
+            padding-right: 2.75rem;
+            cursor: pointer;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--walnut-600);
+            margin-top: 0.45rem;
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+            outline: none;
+            text-decoration: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-success {
+            background: var(--forest);
+            color: #fff;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #1c362c;
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px -8px rgba(36, 70, 58, 0.45);
+        }
+
+        .btn-success:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn.is-loading {
+            color: rgba(255, 255, 255, 0.001); /* hide label text without collapsing layout */
+            pointer-events: none;
+        }
+
+        .btn.is-loading::after {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2.5px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #fff;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn-success {
+            position: relative;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================================
+           STATUS ALERTS
+           ============================================================ */
+        #status {
+            margin-top: 1.25rem;
+        }
+
+        .alert {
+            padding: 0.9rem 1.1rem 0.9rem 3rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius-md);
+            border: 1px solid transparent;
+            line-height: 1.45;
+            position: relative;
+        }
+
+        .alert::before {
+            position: absolute;
+            left: 1rem;
+            top: 0.85rem;
+            font-size: 1.05rem;
+            line-height: 1;
+        }
+
+        .alert-info {
+            background: var(--info-bg);
+            color: var(--info);
+            border-color: #c7dce6;
+        }
+        .alert-info::before { content: '⏳'; }
+
+        .alert-warning {
+            background: var(--warning-bg);
+            color: var(--warning);
+            border-color: #eeddb5;
+        }
+        .alert-warning::before { content: '📱'; }
+
+        .alert-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border-color: #edc8c1;
+        }
+        .alert-danger::before { content: '⚠️'; }
+
+        .alert-success {
+            background: var(--success-bg);
+            color: var(--success);
+            border-color: #c2ddd0;
+        }
+        .alert-success::before { content: '✅'; }
+
+        /* ============================================================
+           FOOTER NOTE
+           ============================================================ */
+        .secure-note {
+            margin-top: 1.5rem;
+            padding-top: 1.25rem;
+            border-top: 1px dashed var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--walnut-600);
+            font-weight: 500;
+        }
+
+        .secure-note svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--brass);
+        }
+
+        /* ============================================================
+           ACCESSIBILITY
+           ============================================================ */
+        a:focus-visible,
+        button:focus-visible,
+        select:focus-visible,
+        input:focus-visible {
+            outline: 2.5px solid var(--brass);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 560px) {
+            .payment-wrapper { padding: 1.5rem 0 2.5rem; }
+            .payment-header { padding: 1.5rem 1.25rem; }
+            .payment-body { padding: 1.5rem 1.25rem; }
+            .payment-header h3 { font-size: 1.35rem; }
+            .order-summary { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">Furniture Store</a>
+    </div>
+</nav>
+
+<div class="container payment-wrapper">
+    <div class="payment-card">
+        <div class="payment-header">
+            <div class="eyebrow">Step 3 of 3</div>
+            <h3>Complete payment</h3>
+            <div class="order-summary">
+                <div class="summary-item">
+                    <div class="label">Order</div>
+                    <div class="value" id="orderNumber"></div>
+                </div>
+                <div class="summary-item amount">
+                    <div class="label">Amount due</div>
+                    <div class="value" id="amount"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="payment-body">
+            <div class="form-section-title">Mobile money details</div>
+
+            <div class="form-group">
+                <label class="form-label" for="provider">
+                    Provider <span class="required">*</span>
+                </label>
+                <select class="form-select" id="provider" required>
+                    <option value="">Select provider</option>
+                    <option value="Airtel">Airtel Money</option>
+                    <option value="Tigo">Tigo Pesa</option>
+                    <option value="Halopesa">HaloPesa</option>
+                    <option value="Azampesa">AzamPesa</option>
+                    <option value="M-Pesa">M-Pesa</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="phone">
+                    Phone number <span class="required">*</span>
+                </label>
+                <input type="tel" class="form-control" id="phone"
+                       placeholder="e.g. 0712345678" required
+                       autocomplete="tel" inputmode="tel">
+                <div class="form-hint">
+                    You'll get a prompt on this number to approve the payment.
+                </div>
+            </div>
+
+            <button class="btn btn-success btn-lg" id="payBtn" type="button">
+                Pay now
+            </button>
+
+            <div id="status"></div>
+
+            <div class="secure-note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Secured payment · 256-bit encryption
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    const orderId = sessionStorage.getItem('orderId');
+    if (!orderId) location.href = '/cart.html';
+
+    document.getElementById('orderNumber').textContent = sessionStorage.getItem('orderNumber') || '';
+    document.getElementById('amount').textContent =
+        'TZS ' + Number(sessionStorage.getItem('orderTotal') || 0).toLocaleString();
+
+    document.getElementById('payBtn').addEventListener('click', async () => {
+        const provider = document.getElementById('provider').value;
+        const phone = document.getElementById('phone').value;
+        if (!provider || !phone) { alert('Fill all fields'); return; }
+
+        const payBtn = document.getElementById('payBtn');
+        payBtn.classList.add('is-loading');
+        payBtn.disabled = true;
+
+        document.getElementById('status').innerHTML =
+            '<div class="alert alert-info">Sending payment request...</div>';
+
+        try {
+            const res = await api.initiatePayment(Number(orderId), phone, provider);
+            sessionStorage.setItem('paymentId', res.data.paymentId);
+            sessionStorage.setItem('externalId', res.data.externalId);
+
+            if (res.data.status === 'FAILED') {
+                location.href = '/payment-failed.html';
+                return;
+            }
+
+            document.getElementById('status').innerHTML =
+                '<div class="alert alert-warning">Please check your phone and approve the payment...</div>';
+
+            pollPaymentStatus(res.data.paymentId);
+        } catch(e) {
+            alert('Payment error: ' + e.message);
+            document.getElementById('status').innerHTML =
+                `<div class="alert alert-danger">${e.message}</div>`;
+            payBtn.classList.remove('is-loading');
+            payBtn.disabled = false;
+        }
+    });
+
+    async function pollPaymentStatus(paymentId) {
+        let attempts = 0;
+        const maxAttempts = 60; // 2 min
+        const interval = setInterval(async () => {
+            attempts++;
+            try {
+                const res = await api.getPayment(paymentId);
+                const status = res.data.status;
+                if (status === 'SUCCESS') {
+                    clearInterval(interval);
+                    sessionStorage.setItem('paymentStatus', 'SUCCESS');
+                    location.href = '/payment-success.html';
+                } else if (status === 'FAILED' || status === 'CANCELLED') {
+                    clearInterval(interval);
+                    location.href = '/payment-failed.html';
+                }
+            } catch(e) { console.error(e); }
+
+            if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                document.getElementById('status').innerHTML =
+                    '<div class="alert alert-warning">Still pending. Check order status later.</div>';
+            }
+        }, 2000);
+    }
+</script>
+</body>
+</html>

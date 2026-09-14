@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">🛋️ Furniture Store</a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link active" href="/products.html">Products</a>
+            <a class="nav-link" href="/cart.html">Cart <span id="cart-count" class="badge bg-warning">0</span></a>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <h2>All Products</h2>
+    <input type="text" id="search" class="form-control mb-4" placeholder="Search products...">
+    <div id="products" class="row"></div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    async function loadProducts(keyword) {
+        try {
+            let res;
+            if (keyword) {
+                res = await fetch(`/api/products/search?keyword=${encodeURIComponent(keyword)}`).then(r=>r.json());
+            } else {
+                res = await api.getProducts();
+            }
+            const products = res.data;
+            document.getElementById('products').innerHTML = products.map(p => `
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <img src="${p.image || 'https://via.placeholder.com/300'}" class="card-img-top" style="height:220px;object-fit:cover">
+                            <div class="card-body d-flex flex-column">
+                                <h5>${p.name}</h5>
+                                <p class="text-muted small">${p.category || ''}</p>
+                                <p class="fw-bold">TZS ${Number(p.price).toLocaleString()}</p>
+                                <p class="small">Stock: ${p.stock}</p>
+                                <a href="/product.html?id=${p.id}" class="btn btn-primary mt-auto">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+        } catch(e) { console.error(e); }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCartCount();
+        loadProducts();
+        let timer;
+        document.getElementById('search').addEventListener('input', e => {
+            clearTimeout(timer);
+            timer = setTimeout(() => loadProducts(e.target.value), 300);
+        });
+    });
+</script>
+</body>
+</html>

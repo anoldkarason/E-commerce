@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">🛋️ Furniture Store</a>
+    </div>
+</nav>
+
+<div class="container my-5">
+    <h2>Checkout</h2>
+    <div class="row">
+        <div class="col-md-7">
+            <form id="checkout-form">
+                <div class="mb-3">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-control" id="name" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Phone Number * (e.g. 0712345678)</label>
+                    <input type="tel" class="form-control" id="phoneNumber" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-control" id="city">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-control" id="notes"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg w-100">Place Order & Pay</button>
+            </form>
+        </div>
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Order Summary</h5>
+                    <div id="summary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        updateCartCount();
+        try {
+            const res = await api.getCart();
+            const cart = res.data;
+            if (!cart.items || cart.items.length === 0) {
+                location.href = '/cart.html'; return;
+            }
+            document.getElementById('summary').innerHTML = `
+                    ${cart.items.map(i => `
+                        <div class="d-flex justify-content-between">
+                            <span>${i.productName} x ${i.quantity}</span>
+                            <span>TZS ${Number(i.subtotal).toLocaleString()}</span>
+                        </div>
+                    `).join('')}
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total</span>
+                        <span>TZS ${Number(cart.total).toLocaleString()}</span>
+                    </div>
+                `;
+        } catch(e) { console.error(e); }
+    });
+
+    document.getElementById('checkout-form').addEventListener('submit', async e => {
+        e.preventDefault();
+        const payload = {
+            name: document.getElementById('name').value,
+            phoneNumber: document.getElementById('phoneNumber').value,
+            email: document.getElementById('email').value,
+            address: document.getElementById('address').value,
+            city: document.getElementById('city').value,
+            notes: document.getElementById('notes').value
+        };
+        try {
+            const res = await api.createOrder(payload);
+            const order = res.data;
+            sessionStorage.setItem('orderId', order.id);
+            sessionStorage.setItem('orderNumber', order.orderNumber);
+            sessionStorage.setItem('orderTotal', order.totalAmount);
+            location.href = '/payment.html';
+        } catch(e) {
+            alert(e.message || 'Failed to create order');
+        }
+    });
+</script>
+</body>
+</html>
