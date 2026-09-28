@@ -19,8 +19,21 @@ spring:
 server:
   port: ${PORT:8080}
 
-# AzamPay example
+# AzamPay Configuration
 azampay:
+  # Checkout / payment processing base URL
+  base-url: ${AZAMPAY_BASE_URL:https://sandbox.azampay.co.tz}
+
+  # Authentication endpoint (token generation) — lives on a separate subdomain
+  auth-url: ${AZAMPAY_AUTH_URL:https://authenticator-sandbox.azampay.co.tz/AppRegistration/GenerateToken}
+
+  # Full checkout endpoint
+  checkout-url: ${AZAMPAY_CHECKOUT_URL:https://sandbox.azampay.co.tz/azampay/mno/checkout}
+
+  # Credentials (must be set in Render environment variables)
   client-id: ${AZAMPAY_CLIENT_ID}
   client-secret: ${AZAMPAY_CLIENT_SECRET}
   app-name: ${AZAMPAY_APP_NAME}
+
+  # Public callback URL that AzamPay will POST to
+  callback-url: ${AZAMPAY_CALLBACK_URL:https://e-commerce-rqjh.onrender.com/api/payments/azam-pay/callback}
