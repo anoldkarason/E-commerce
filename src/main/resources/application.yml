@@ -30,10 +30,13 @@ azampay:
   # Full checkout endpoint
   checkout-url: ${AZAMPAY_CHECKOUT_URL:https://sandbox.azampay.co.tz/azampay/mno/checkout}
 
-  # Credentials (must be set in Render environment variables)
+  # Credentials
   client-id: ${AZAMPAY_CLIENT_ID}
   client-secret: ${AZAMPAY_CLIENT_SECRET}
-  app-name: ${AZAMPAY_APP_NAME}
+
+  # ⚠️ Hardcoded because the trailing space is stripped by Render's env var UI.
+  # The quotes are ESSENTIAL — YAML strips trailing spaces from unquoted values.
+  app-name: "E-commerce "
 
   # Public callback URL that AzamPay will POST to
   callback-url: ${AZAMPAY_CALLBACK_URL:https://e-commerce-rqjh.onrender.com/api/payments/azam-pay/callback}
