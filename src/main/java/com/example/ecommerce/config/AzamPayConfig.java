@@ -13,6 +13,6 @@ public class AzamPayConfig {
     private String clientSecret;
     private String appName;
     private String callbackUrl;
-    private String authUrl;
-    private String tokenUrl;
+    private String authUrl;         // ✅ used for token generation
+    private String checkoutUrl;     // ✅ used for payment initiation
 }

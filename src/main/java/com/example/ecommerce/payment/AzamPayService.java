@@ -26,9 +26,17 @@ public class AzamPayService {
     private String cachedToken;
     private long tokenExpiry = 0;
 
-    public String getAccessToken() {
-        if (cachedToken != null && System.currentTimeMillis() < tokenExpiry) {
+    public synchronized String getAccessToken() {
+        // Reuse cached token if still valid (with 60s safety margin)
+        if (cachedToken != null && System.currentTimeMillis() < tokenExpiry - 60_000) {
             return cachedToken;
+        }
+
+        // Fail fast with a clear message if config is missing
+        if (config.getAuthUrl() == null || config.getAuthUrl().isBlank()) {
+            throw new PaymentException(
+                    "AzamPay auth URL is not configured (authUrl is null). " +
+                            "Check AZAMPAY_AUTH_URL and AzamPayConfig.authUrl.");
         }
 
         try {
@@ -42,8 +50,10 @@ public class AzamPayService {
 
             HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
 
+            log.info("Requesting AzamPay token from {}", config.getAuthUrl());
+
             ResponseEntity<Map> response = restTemplate.exchange(
-                    config.getTokenUrl(),
+                    config.getAuthUrl(),            // ✅ FIXED: was getTokenUrl()
                     HttpMethod.POST,
                     entity,
                     Map.class
@@ -54,6 +64,7 @@ public class AzamPayService {
                 if (data != null && data.get("accessToken") != null) {
                     cachedToken = data.get("accessToken").toString();
                     tokenExpiry = System.currentTimeMillis() + 3600_000L; // 1 hour
+                    log.info("AzamPay token acquired successfully");
                     return cachedToken;
                 }
             }
@@ -67,6 +78,12 @@ public class AzamPayService {
     }
 
     public AzamPayResponse initiatePayment(AzamPayRequest request) {
+        if (config.getCheckoutUrl() == null || config.getCheckoutUrl().isBlank()) {
+            throw new PaymentException(
+                    "AzamPay checkout URL is not configured (checkoutUrl is null). " +
+                            "Check AZAMPAY_CHECKOUT_URL and AzamPayConfig.checkoutUrl.");
+        }
+
         try {
             String token = getAccessToken();
 
@@ -76,8 +93,10 @@ public class AzamPayService {
 
             HttpEntity<AzamPayRequest> entity = new HttpEntity<>(request, headers);
 
+            log.info("Sending AzamPay payment request to {}", config.getCheckoutUrl());
+
             ResponseEntity<Map> response = restTemplate.exchange(
-                    config.getAuthUrl(),
+                    config.getCheckoutUrl(),        // ✅ FIXED: was getAuthUrl()
                     HttpMethod.POST,
                     entity,
                     Map.class
@@ -95,6 +114,8 @@ public class AzamPayService {
             }
 
             return azamResponse;
+        } catch (PaymentException e) {
+            throw e;
         } catch (Exception e) {
             log.error("AzamPay payment error", e);
             throw new PaymentException("AzamPay payment failed: " + e.getMessage(), e);
